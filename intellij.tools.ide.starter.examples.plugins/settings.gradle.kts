@@ -1,1 +1,0 @@
-rootProject.name = "ide-starter-examples-plugins"
