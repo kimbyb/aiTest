@@ -8,17 +8,20 @@ import com.intellij.driver.sdk.ui.components.settings.settingsDialog
 import com.intellij.ide.starter.driver.engine.runIdeWithDriver
 import com.intellij.ide.starter.examples.steps.ProjectPrep
 import com.intellij.ide.starter.examples.steps.ProjectSteps.createClassFromTemplate
-import com.intellij.ide.starter.examples.steps.SettingSteps.createTemplate
-import com.intellij.ide.starter.examples.steps.SettingSteps.modifyClassTemplate
+import com.intellij.ide.starter.examples.steps.SettingsSteps.createTemplate
+import com.intellij.ide.starter.examples.steps.SettingsSteps.deleteTemplate
+import com.intellij.ide.starter.examples.steps.SettingsSteps.modifyClassTemplate
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
+import java.awt.event.KeyEvent
 import kotlin.time.Duration.Companion.minutes
 
 
 class SettingsEditorTestWithDriver {
 
     @Test
-    fun openSettingsAndSelectEditor() {
+    fun createCustomTemplateAndGenerateClass() {
 
         val testContext = ProjectPrep.createTestContext()
 
@@ -45,7 +48,8 @@ class SettingsEditorTestWithDriver {
 
                 createClassFromTemplate(
                     templateName = "TestTemplate",
-                    className = "MyGeneratedClass")
+                    className = "MyGeneratedClass"
+                )
 
                 // Verify generated content
                 codeEditor().apply {
@@ -61,7 +65,7 @@ class SettingsEditorTestWithDriver {
     }
 
     @Test
-    fun modifyExistingClassTemplate(){
+    fun modifyExistingClassTemplate() {
 
         val testContext = ProjectPrep.createTestContext()
 
@@ -87,6 +91,47 @@ class SettingsEditorTestWithDriver {
                         "Modified template content was not generated"
                     )
                 }
+            }
+        }
+    }
+
+    @Test
+    fun deleteCustomTemplate() {
+        val testContext = ProjectPrep.createTestContext()
+
+        testContext.runIdeWithDriver().useDriverAndCloseIde {
+            ideFrame {
+
+                invokeAction("ShowSettings")
+
+                settingsDialog {
+                    createTemplate(
+                        templateName = "TestTemplate",
+                        templateContent = "public class \${NAME} " +
+                                ""
+                    )
+                }
+
+                invokeAction("ShowSettings")
+
+                settingsDialog {
+                    deleteTemplate(templateName = "TestTemplate")
+                }
+
+                keyboard {
+                    hotKey(KeyEvent.VK_ALT, KeyEvent.VK_INSERT)
+
+                    typeText("TestTemplate")
+
+                    enter()
+                }
+
+                Thread.sleep(1000)
+
+                assertFalse(
+                    x("//div[@accessiblename='TestTemplate']").present(),
+                    "Deleted template is still available"
+                )
             }
         }
     }

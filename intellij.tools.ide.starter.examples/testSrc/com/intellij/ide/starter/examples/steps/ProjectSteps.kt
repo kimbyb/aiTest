@@ -32,8 +32,6 @@ object ProjectSteps {
                 java.awt.event.KeyEvent.VK_INSERT
             )
 
-            Thread.sleep(1000)
-
             typeText(templateName)
 
             enter()
@@ -44,8 +42,6 @@ object ProjectSteps {
             typeText(className)
 
             enter()
-
-            Thread.sleep(1000)
 
             escape()
         }
