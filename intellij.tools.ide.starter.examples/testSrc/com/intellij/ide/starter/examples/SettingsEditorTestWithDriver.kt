@@ -56,7 +56,8 @@ class SettingsEditorTestWithDriver {
 
                     createTemplate(
                         templateName = "TestTemplate",
-                        templateContent = "public class \${NAME} {"
+                        templateContent = "public class \${NAME} " +
+                                ""
                     )
 
                 }
